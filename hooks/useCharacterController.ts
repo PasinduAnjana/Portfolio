@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-export type CharacterAnimation = 'Idle' | 'Walk' | 'Typing'
+export type CharacterAnimation = 'Idle' | 'Walk' | 'Typing' | 'Picking'
 
 interface CharacterControllerState {
   curAnimation: CharacterAnimation
