@@ -8,7 +8,7 @@ export default function Home() {
     <main className="h-screen w-full">
       <Canvas
         camera={{
-          position: [0, 2, 5],
+          position: [0, 2, 10],
           fov: 30,
         }}
       >

@@ -26,6 +26,9 @@ export function Avatar(props: any) {
     if (group.current) {
       group.current.position.x = scroll.offset * 10;
       camera.position.x = group.current.position.x;
+      
+      // Look at the character (slightly above feet, e.g. at height 1.5)
+      camera.lookAt(group.current.position.x, 1.5, 0);
     }
   });
 
