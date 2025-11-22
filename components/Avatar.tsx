@@ -1,61 +1,57 @@
-import React, { useEffect, useRef } from 'react'
-import { useAnimations, useGLTF, useScroll } from '@react-three/drei'
-import { useCharacterController } from '../hooks/useCharacterController'
-import { Group } from 'three'
-import { useFrame } from '@react-three/fiber'
+import { useAnimations, useGLTF, useScroll } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
+import React, { useEffect, useRef } from "react";
+import { Group } from "three";
+import { useCharacterController } from "../hooks/useCharacterController";
 
 export function Avatar(props: any) {
-  const group = useRef<Group>(null)
-  const { scene } = useGLTF('/models/avatar.glb')
-  
-  const { animations: idleAnimation } = useGLTF('/models/animations/idle.glb')
-  const { animations: walkingAnimation } = useGLTF('/models/animations/walking.glb')
-  const { animations: typingAnimation } = useGLTF('/models/animations/typing.glb')
+  const group = useRef<Group>(null);
+  const { scene } = useGLTF("/models/avatar.glb");
+  const scroll = useScroll();
 
-  idleAnimation[0].name = 'Idle'
-  walkingAnimation[0].name = 'Walk'
-  typingAnimation[0].name = 'Typing'
+  const { animations: [idleClip] } = useGLTF("/models/animations/idle.glb");
+  const { animations: [walkingClip] } = useGLTF("/models/animations/walking.glb");
+  const { animations: [typingClip] } = useGLTF("/models/animations/typing.glb");
+
+  idleClip.name = "Idle";
+  walkingClip.name = "Walk";
+  typingClip.name = "Typing";
 
   const { actions } = useAnimations(
-    [idleAnimation[0], walkingAnimation[0], typingAnimation[0]],
+    [idleClip, walkingClip, typingClip],
     group
-  )
-
-  const curAnimation = useCharacterController((state) => state.curAnimation)
-  const scroll = useScroll()
+  );
 
   useFrame(({ camera }) => {
     if (group.current) {
-      // Move character to the right based on scroll
-      group.current.position.x = scroll.offset * 10
-      
-      // Make camera follow the character
-      camera.position.x = group.current.position.x
+      group.current.position.x = scroll.offset * 10;
+      camera.position.x = group.current.position.x;
     }
-  })
+  });
 
   useEffect(() => {
-    const action = actions[curAnimation]
-    
-    // Reset all weights
-    Object.values(actions).forEach(a => {
-        if (a && a !== action) {
-            a.stop()
-        }
-    })
+    // Play initial animation
+    let activeAnimation = useCharacterController.getState().curAnimation;
+    actions[activeAnimation]?.reset().fadeIn(0.2).play();
 
-    if (action) {
-        action.reset().play()
-    }
-    
-    return () => {}
-  }, [curAnimation, actions])
+    // Subscribe to changes
+    const unsubscribe = useCharacterController.subscribe((state) => {
+      const newAnimation = state.curAnimation;
+      if (newAnimation !== activeAnimation) {
+        actions[activeAnimation]?.fadeOut(0.2);
+        actions[newAnimation]?.reset().fadeIn(0.2).play();
+        activeAnimation = newAnimation;
+      }
+    });
+
+    return () => unsubscribe();
+  }, [actions]);
 
   return (
     <group ref={group} {...props} dispose={null}>
       <primitive object={scene} rotation-y={Math.PI / 2} />
     </group>
-  )
+  );
 }
 
-useGLTF.preload('/models/avatar.glb')
+useGLTF.preload("/models/avatar.glb");
