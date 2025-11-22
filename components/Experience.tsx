@@ -13,7 +13,7 @@ export const Experience = () => {
       <Room />
       <MapDebug />
 
-      <ScrollControls pages={3} damping={0.1}>
+      <ScrollControls pages={6} damping={0.1}>
         <group>
           <Avatar />
         </group>
