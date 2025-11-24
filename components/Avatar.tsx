@@ -11,7 +11,7 @@ export function Avatar(props: any) {
   const { scene } = useGLTF("/models/avatar.glb");
 
   const { zoom } = useControls('Camera', {
-    zoom: { value: 5, min: 2, max: 10, step: 0.1 }
+    zoom: { value: 10, min: 2, max: 10, step: 0.1 }
   });
 
   const { animations: [idleClip] } = useGLTF("/models/animations/idle.glb");
