@@ -11,7 +11,7 @@ export function Avatar(props: any) {
   const { scene } = useGLTF("/models/avatar.glb");
 
   const { zoom } = useControls('Camera', {
-    zoom: { value: 10, min: 2, max: 10, step: 0.1 }
+    zoom: { value: 10, min: 2, max: 20, step: 0.1 }
   });
 
   const { animations: [idleClip] } = useGLTF("/models/animations/idle.glb");
@@ -48,7 +48,7 @@ export function Avatar(props: any) {
         group.current.position.set(0, 0, 0);
         group.current.rotation.set(0, 0, 0);
         
-        targetCameraPos.set(0, 1.5, 1.5);
+        targetCameraPos.set(0, 1.5, 10);
         targetLookAt.set(0, 1.5, 0);
       }
     } else {
